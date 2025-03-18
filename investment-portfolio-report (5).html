@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דוח תיק השקעות משפחת נמט</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 30px;
+        }
+        
+        .summary-box {
+            background-color: #f1f8ff;
+            border: 1px solid #c3dafe;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .summary-box h3 {
+            color: #3358ac;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .summary-data {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        
+        .summary-item {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .summary-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .summary-item .value.positive {
+            color: #27ae60;
+        }
+        
+        .summary-item .value.negative {
+            color: #e74c3c;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: right;
+        }
+        
+        tbody tr {
+            transition: background-color 0.3s;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background-color: #f1f8ff;
+        }
+        
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .chart-wrapper {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .highlight {
+            font-weight: bold;
+            color: #3358ac;
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .market-analysis {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>דוח ניתוח תיק השקעות</h1>
+            <div style="margin: 15px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border-right: 3px solid #3358ac;">
+                <p style="font-weight: bold; font-size: 1.1rem; margin-bottom: 5px;">מאת: אריק ניסן</p>
+                <p style="font-size: 0.95rem; margin-bottom: 5px;">מתכנן פיננסי ומנכ״ל Seasons Capital פמילי אופיס</p>
+                <p style="font-size: 0.95rem;">מבית ארבע עונות מקבוצת IBI</p>
+            </div>
+            <h3>עבור: משפחת נמט</h3>
+            <p>תקופת הדוח: 30/09/2024 - 31/12/2024</p>
+            <p style="color: #555; font-style: italic;">הדוח אינו כולל את קרנות הפנסיה וביטוחי המנהלים שקיימים לחגי ותמר נמט</p>
+        </header>
+        
+        <div class="summary-box">
+            <h3>סיכום ביצועי התיק</h3>
+            <div class="summary-data">
+                <div class="summary-item">
+                    <h4>שווי תיק נוכחי</h4>
+                    <div class="value">₪6,650,276</div>
+                </div>
+                <div class="summary-item">
+                    <h4>תשואה מתחילת הדרך</h4>
+                    <div class="value positive">6.73%</div>
+                </div>
+                <div class="summary-item">
+                    <h4>תשואה רבעונית</h4>
+                    <div class="value positive">2.14%</div>
+                </div>
+                <div class="summary-item">
+                    <h4>רווח</h4>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-size: 0.95rem; text-align: right;">רווח מתחילת הדרך:</span>
+                        <span class="value positive" style="font-size: 0.95rem; text-align: left;">₪138,771</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="font-size: 0.95rem; text-align: right;">רווח רבעוני:</span>
+                        <span class="value positive" style="font-size: 0.95rem; text-align: left;">₪407,891</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 0.95rem; text-align: right;">גידול תיק כולל הפקדות:</span>
+                        <span class="value positive" style="font-size: 0.95rem; text-align: left;">₪587,173</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>פילוח לפי מכשירי השקעה</h2>
+        <p>הטבלה מציגה את החלוקה בין מכשירי ההשקעה השונים ואת תרומתם לתשואת התיק מתחילת הדרך.</p>
+        
+        <table id="investment-types-table">
+            <thead>
+                <tr>
+                    <th>מכשיר השקעה</th>
+                    <th>שווי נוכחי</th>
+                    <th>אחוז מהתיק</th>
+                    <th>תשואה מתחילת הדרך</th>
+                    <th>תרומה לתשואת התיק</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>פוליסה פיננסית</td>
+                    <td>₪2,013,451</td>
+                    <td>30.28%</td>
+                    <td>1.61%</td>
+                    <td>22.93%</td>
+                </tr>
+                <tr>
+                    <td>קרן השתלמות</td>
+                    <td>₪1,564,144</td>
+                    <td>23.52%</td>
+                    <td>1.82%</td>
+                    <td>18.13%</td>
+                </tr>
+                <tr>
+                    <td>קופת גמל</td>
+                    <td>₪1,487,065</td>
+                    <td>22.36%</td>
+                    <td>2.22%</td>
+                    <td>24.01%</td>
+                </tr>
+                <tr>
+                    <td>גמל להשקעה</td>
+                    <td>₪1,585,616</td>
+                    <td>23.84%</td>
+                    <td>3.13%</td>
+                    <td>34.93%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <div class="chart-title">חלוקת התיק לפי מכשירי השקעה</div>
+                <canvas id="investment-types-pie"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <div class="chart-title">תרומה לתשואת התיק לפי מכשירי השקעה</div>
+                <canvas id="investment-types-contribution"></canvas>
+            </div>
+        </div>
+        
+        <h2>פילוח לפי בתי השקעות</h2>
+        <p>הטבלה מציגה את החלוקה בין בתי ההשקעות השונים ואת תרומתם לתשואת התיק מתחילת הדרך.</p>
+        
+        <table id="investment-houses-table">
+            <thead>
+                <tr>
+                    <th>בית השקעות</th>
+                    <th>שווי נוכחי</th>
+                    <th>אחוז מהתיק</th>
+                    <th>תשואה מתחילת הדרך</th>
+                    <th>תרומה לתשואת התיק</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>הכשרה</td>
+                    <td>₪2,013,451</td>
+                    <td>30.28%</td>
+                    <td>1.61%</td>
+                    <td>22.93%</td>
+                </tr>
+                <tr>
+                    <td>מור</td>
+                    <td>₪684,261</td>
+                    <td>10.29%</td>
+                    <td>0.83%</td>
+                    <td>4.00%</td>
+                </tr>
+                <tr>
+                    <td>אלטשולר שחם</td>
+                    <td>₪527,340</td>
+                    <td>7.93%</td>
+                    <td>0.16%</td>
+                    <td>0.60%</td>
+                </tr>
+                <tr>
+                    <td>אנליסט</td>
+                    <td>₪527,175</td>
+                    <td>7.93%</td>
+                    <td>1.88%</td>
+                    <td>7.16%</td>
+                </tr>
+                <tr>
+                    <td>מגדל</td>
+                    <td>₪2,898,049</td>
+                    <td>43.58%</td>
+                    <td>3.11%</td>
+                    <td>65.31%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <div class="chart-title">חלוקת התיק לפי בתי השקעות</div>
+                <canvas id="investment-houses-pie"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <div class="chart-title">תרומה לתשואת התיק לפי בתי השקעות</div>
+                <canvas id="investment-houses-contribution"></canvas>
+            </div>
+        </div>
+        
+        <h2>סימולציית תשואות עתידיות</h2>
+        <p>הטבלה מציגה סימולציה של ביצועי התיק בהנחה שיישמר קצב התשואה השנתית הנוכחי.</p>
+        <p class="negative" style="font-weight: bold; font-size: 1.1rem; margin: 15px 0; padding: 10px; background-color: #fff8f8; border: 1px solid #ffcccc; border-radius: 5px;">אזהרה! אין באמור הבטחה כלשהי לתשואה. זוהי רק סימולציה המראה כיצד התיק יתפתח במידה וקצב התשואה הנוכחי יימשך כפי שהוא.</p>
+        
+        <table id="simulation-table">
+            <thead>
+                <tr>
+                    <th>תקופה</th>
+                    <th>תשואה צפויה</th>
+                    <th>שווי תיק משוער</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>שנה אחת</td>
+                    <td>12.52%</td>
+                    <td>₪7,482,090</td>
+                </tr>
+                <tr>
+                    <td>3 שנים</td>
+                    <td>42.48%</td>
+                    <td>₪9,475,913</td>
+                </tr>
+                <tr>
+                    <td>5 שנים</td>
+                    <td>80.12%</td>
+                    <td>₪11,978,877</td>
+                </tr>
+                <tr>
+                    <td>10 שנים</td>
+                    <td>224.33%</td>
+                    <td>₪21,570,190</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="chart-wrapper">
+            <div class="chart-title">סימולציית שווי תיק לאורך זמן</div>
+            <canvas id="simulation-chart"></canvas>
+        </div>
+        
+        <h2>סקירת שוק - 2024 ומבט ל-2025</h2>
+        <div class="market-analysis">
+            <h3>שנת 2024 - הצלחת השקעות במדדי ארה"ב</h3>
+            <p>
+                שנת 2024 התאפיינה בביצועים חזקים של שוק המניות האמריקאי, בהובלת מדד ה-S&P 500 אשר הניב תשואות נאות. 
+                הבחירה להתמקד במדדי ארה"ב הוכיחה את עצמה מכמה סיבות מרכזיות:
+            </p>
+            <ul>
+                <li>
+                    <strong>יציבות כלכלית:</strong> על אף אתגרי האינפלציה והריבית, כלכלת ארה"ב הפגינה עמידות וצמיחה יציבה יחסית.
+                </li>
+                <li>
+                    <strong>דומיננטיות טכנולוגית:</strong> חברות הטכנולוגיה האמריקאיות, במיוחד בתחומי הבינה המלאכותית, המשיכו להציג צמיחה וחדשנות.
+                </li>
+                <li>
+                    <strong>ביצועים עודפים:</strong> מדד ה-S&P 500 הניב תשואות גבוהות יותר בהשוואה למדדים בישראל, מה שתרם משמעותית לביצועי התיק.
+                </li>
+            </ul>
+            
+            <h3>מבט ל-2025 - הרחבת החשיפה לישראל והקטנת החשיפה למניות</h3>
+            <p>
+                השינוי המתוכנן לקראת שנת 2025, הכולל הרחבת החשיפה לשוק הישראלי והקטנת החשיפה למניות בכלל ולשוק האמריקאי בפרט, נובע ממספר שיקולים אסטרטגיים:
+            </p>
+            <ul>
+                <li>
+                    <strong>פיזור סיכונים:</strong> הגדלת החשיפה לשוק הישראלי תורמת לפיזור גיאוגרפי של ההשקעות, מה שמקטין את התלות בשוק האמריקאי.
+                </li>
+                <li>
+                    <strong>הערכות שוק:</strong> לאחר עליות משמעותיות במדדי המניות האמריקאיים, ישנן הערכות לתיקון אפשרי או האטה בקצב העליות.
+                </li>
+                <li>
+                    <strong>מדיניות ריבית:</strong> השינויים הצפויים בריבית בארה"ב ובישראל עשויים להשפיע על כדאיות ההשקעה בשווקים השונים.
+                </li>
+                <li>
+                    <strong>הזדמנויות בשוק המקומי:</strong> השוק הישראלי מציג הזדמנויות השקעה אטרקטיביות, במיוחד לאור התאוששות מאתגרי 2023-2024.
+                </li>
+                <li>
+                    <strong>הקטנת פרופיל הסיכון:</strong> הקטנת החשיפה למניות באופן כללי נועדה להקטין את תנודתיות התיק לקראת אי-ודאות כלכלית אפשרית.
+                </li>
+            </ul>
+            
+            <p>
+                שילוב של אסטרטגיות אלו צפוי לייצר תיק מאוזן יותר שיוכל להתמודד עם תרחישי שוק שונים בשנת 2025, תוך שמירה על פוטנציאל לתשואה נאותה ביחס לסיכון.
+            </p>
+        </div>
+        
+        <h2>סיכום ביצועי התיק</h2>
+        <div class="summary-box">
+            <p>
+                <strong>התיק הניב תשואה של 6.73% מתחילת הדרך</strong>, המשקפת ביצועים במשך כ-6.5 חודשים. 
+                מכשירי הגמל להשקעה הציגו את התשואה הגבוהה ביותר (3.13%), ותרמו כ-35% מסך הרווח של התיק.
+                בית ההשקעות מגדל היווה את החלק הארי של התיק (כ-44%) ותרם כ-65% מהרווח הכולל.
+            </p>
+            <p>
+                אסטרטגיית ההשקעה שהתמקדה במדדי ארה"ב, ובפרט במדד ה-S&P 500, הוכיחה את עצמה בתקופה הנמדדת. 
+                השינויים המתוכננים לקראת 2025, הכוללים הרחבת החשיפה לישראל והקטנת החשיפה למניות, נועדו להתאים את התיק לתנאי השוק המשתנים
+                ולשמור על איזון מתאים בין סיכון לתשואה.
+            </p>
+        </div>
+        
+        <footer>
+            <p>דוח זה נוצר עבור משפחת נמט | תאריך הפקה: 18/03/2025</p>
+            <p>הנתונים המוצגים בדוח זה הם לצרכי המחשה בלבד ואינם מהווים המלצה להשקעה.</p>
+            <p style="margin-top: 10px; font-weight: bold;">ט.ל.ח</p>
+        </footer>
+    </div>
+
+    <script>
+        // נתונים עבור תרשימים
+        const investmentTypes = {
+            labels: ['פוליסה פיננסית', 'קרן השתלמות', 'קופת גמל', 'גמל להשקעה'],
+            values: [30.28, 23.52, 22.36, 23.84],
+            contributions: [22.93, 18.13, 24.01, 34.93]
+        };
+        
+        const investmentHouses = {
+            labels: ['הכשרה', 'מור', 'אלטשולר שחם', 'אנליסט', 'מגדל'],
+            values: [30.28, 10.29, 7.93, 7.93, 43.58],
+            contributions: [22.93, 4.00, 0.60, 7.16, 65.31]
+        };
+        
+        const simulationData = {
+            labels: ['כיום', 'שנה', '3 שנים', '5 שנים', '10 שנים'],
+            values: [6650276, 7482090, 9475913, 11978877, 21570190]
+        };
+        
+        // יצירת תרשימים
+        window.onload = function() {
+            // תרשים עוגה - חלוקה לפי מכשירי השקעה
+            new Chart(document.getElementById('investment-types-pie'), {
+                type: 'pie',
+                data: {
+                    labels: investmentTypes.labels,
+                    datasets: [{
+                        data: investmentTypes.values,
+                        backgroundColor: ['#8ecae6', '#a8dadc', '#d8e2dc', '#e9c46a']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // תרשים עוגה - תרומה לתשואה לפי מכשירי השקעה
+            new Chart(document.getElementById('investment-types-contribution'), {
+                type: 'pie',
+                data: {
+                    labels: investmentTypes.labels,
+                    datasets: [{
+                        data: investmentTypes.contributions,
+                        backgroundColor: ['#8ecae6', '#a8dadc', '#d8e2dc', '#e9c46a']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // תרשים עוגה - חלוקה לפי בתי השקעות
+            new Chart(document.getElementById('investment-houses-pie'), {
+                type: 'pie',
+                data: {
+                    labels: investmentHouses.labels,
+                    datasets: [{
+                        data: investmentHouses.values,
+                        backgroundColor: ['#8ecae6', '#a8dadc', '#d8e2dc', '#e9c46a', '#ccd5ae']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // תרשים עוגה - תרומה לתשואה לפי בתי השקעות
+            new Chart(document.getElementById('investment-houses-contribution'), {
+                type: 'pie',
+                data: {
+                    labels: investmentHouses.labels,
+                    datasets: [{
+                        data: investmentHouses.contributions,
+                        backgroundColor: ['#8ecae6', '#a8dadc', '#d8e2dc', '#e9c46a', '#ccd5ae']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // תרשים קו - סימולציית שווי תיק
+            new Chart(document.getElementById('simulation-chart'), {
+                type: 'line',
+                data: {
+                    labels: simulationData.labels,
+                    datasets: [{
+                        label: 'שווי תיק משוער (₪)',
+                        data: simulationData.values,
+                        borderColor: '#3366cc',
+                        backgroundColor: 'rgba(51, 102, 204, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₪' + new Intl.NumberFormat().format(value);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '₪' + new Intl.NumberFormat().format(context.raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
